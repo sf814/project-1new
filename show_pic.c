@@ -31,20 +31,20 @@ void mmap_show_bmp(const char *picname)
 	int x,y;
 	int i,j,k;
 
-	//printf("%s\n",picname);
+	//send_bufto_client("%s\n",picname);
 
 	//chdir("pwd");
 	//1. 访问图片文件。
 	FILE *fp = fopen(picname,"r");  //当前的光标在最开头
 	if(fp == NULL)
-		printf("fopen error!\n");
+		send_bufto_client("fopen error!\n");
 
-	//printf("****%s\n",picname);
+	//send_bufto_client("****%s\n",picname);
 
 	//2. 访问lcd液晶设备
 	int lcd = open("/dev/fb0",O_RDWR);
 	if(lcd < 0)
-		printf("open lcd error!\n");
+		send_bufto_client("open lcd error!\n");
 
 	//3. 跳过54个头数据。
 	fseek(fp,54,SEEK_SET);
@@ -52,7 +52,7 @@ void mmap_show_bmp(const char *picname)
 	//4. 将图片的数据读取到一个缓冲区中。
 	int n = fread(bmp_buf,800*480*3,1,fp);
 	if(n != 1)
-		printf("fread error!\n");
+		send_bufto_client("fread error!\n");
 
 	//5. 24位转32位
 	for(i=0,j=0;i<800*480*4;i+=4,j+=3)
@@ -75,7 +75,7 @@ void mmap_show_bmp(const char *picname)
 	//7. 内存映射
 	char *p = mmap(NULL,800*480*4,PROT_WRITE|PROT_READ,MAP_SHARED,lcd,0);
 	if(p == (void *)-1)
-		printf("mmap error!\n");
+		send_bufto_client("mmap error!\n");
 
 	//8. 不断将show_buf的内容拷贝到内存空间。
 	for(k=0;k<800*480*4;k++)
@@ -97,7 +97,7 @@ void mmap_show_bmp(const char *picname)
 
 int show_world()
 {
-	//printf("****\n");
+	//send_bufto_client("****\n");
 	//1. 初始化链表头
 	struct list_node *head = NULL;
 	head = init_list_pic_head();
@@ -105,7 +105,7 @@ int show_world()
 	//2. 打开目录。
 	DIR *dp = opendir("./pic_data");
 	if(dp == NULL)
-		printf("opendir error!\n");
+		send_bufto_client("opendir error!\n");
 
 	//3. 切换目录。
 	chdir("./pic_data");
@@ -191,7 +191,7 @@ int show_world()
 
 int show_black()
 {
-	//printf("****\n");
+	//send_bufto_client("****\n");
 	//1. 初始化链表头
 	struct list_node *head = NULL;
 	head = init_list_pic_head();
@@ -199,7 +199,7 @@ int show_black()
 	//2. 打开目录。
 	DIR *dp = opendir("./pic_data_black");
 	if(dp == NULL)
-		printf("opendir error!\n");
+		send_bufto_client("opendir error!\n");
 
 	//3. 切换目录。
 	chdir("./pic_data_black");

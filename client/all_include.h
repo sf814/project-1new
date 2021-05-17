@@ -25,12 +25,10 @@
 #include <semaphore.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include "kernel_list.h"
-
-
-//extern int service_choice;
 //登录链用户money
 #define plane_ticket_cost p->money*person_head_log->next->vip_off * person_head_log->next->status_off
+
+extern int main_service_choice=0;
 
 struct person_list
 {
@@ -42,7 +40,7 @@ struct person_list
     float vip_off;//1    0.9     0.8     0.7
     int verify;//0为没实名认证，1为已认证；需要初始化0
     int ticket;//0为无票，1为已购票，需要初始化0
-    char ticket_name[20];//购买机型
+    char ticket_name[10];//购买机型
     char ticket_date[20];//出发时间
     int money;
     int money_num;//    money/100  积分
@@ -75,9 +73,9 @@ struct plane_list
     char name_plane[10];
     char start[5];
     char end[5];
-    char time_date[25];//日期
-    char plane_type[20];//机型
-    char time_hour[25];//时间
+    char time_date[15];//日期
+    char plane_type[5];//机型
+    char time_hour[15];//时间
     int money;
 
     int ticket;//0为无票，1为已购票
@@ -92,9 +90,9 @@ struct deal_list
 {
 
     //ggy_A001.txt  -> ggy,ggy,A001,2300,10F  依次是购买者，乘坐着、航班号、成交价格、座位
-    char name_pay[20];
-    char name_get[20];
-    char name_plane[20];
+    char name_pay[10];
+    char name_get[10];
+    char name_plane[10];
     int money;
 
     struct deal_list *prev;
@@ -102,11 +100,11 @@ struct deal_list
     
 };
 
-struct list_node{
-	char picname[100];
+/* struct list_node{
+	char picname[20];
 	struct list_node *next;
 	struct list_node *prev;
-};
+}; */
 
 
 
@@ -137,7 +135,7 @@ struct list_node{
     //1. 申请成交链表头节点。
 	struct deal_list *init_deal_list_head();
 
-    struct list_node *init_list_pic_head();
+    //struct list_node *init_list_pic_head();
     
 
 
@@ -208,7 +206,6 @@ struct list_node{
     //12.修改信息
     void change_message(struct person_list * ,struct person_list *,struct deal_list *);
     void change_message_normal(struct person_list * ,struct person_list *,struct deal_list *);
-    void change_message_root(struct person_list * ,struct person_list *,struct deal_list *);
 
     //退票
     int return_ticket(struct person_list * ,struct person_list *,struct plane_list *,struct deal_list *);
@@ -230,30 +227,10 @@ struct list_node{
    void root_fun(struct person_list *,struct person_list *,struct real_info *,struct plane_list *,struct deal_list *,struct plane_list * );
 
     //
-    int show_world();
+    /* int show_world();
     void insert_picname_to_list(struct list_node *,char *);
-    void mmap_show_bmp(const char *);
+    void mmap_show_bmp(const char *); */
 
-    //
-    int show_black();
-
-    //删除修改信息后原文件
-    void delete_old_person_list(struct person_list *);
-
-    //
-    struct service_list_node *init_list_head();
-    int init_sock(char *);
-    int msg_broadcast(char *,struct service_list_node *);
-    int msg_send(char *,int );
-    int get_choice_buf(char *,int);
-    int get_buf(char *);
-    void *fun(void *);
-    void * service_fun(void *); 
-    int ret_choice(char *);
-    char* ret_buf(char *,int );
-
-    char *send_bufto_client(char *);
-    void * service_to_client(void *);
 
 
 #endif

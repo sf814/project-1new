@@ -1,6 +1,9 @@
 #include "all_include.h"
 //void buy_others_ticket(struct person_list *,struct plane_list *,struct person_list *);
 
+char service_buf[500];
+char service_ret_buf[500];
+char send_msg_buf[500];
 void buy_ticket(struct person_list *person_head,struct plane_list *plane_head,struct person_list *person_head_log,struct deal_list *deal_head)
 {
     char buy_name[10];
@@ -10,11 +13,14 @@ void buy_ticket(struct person_list *person_head,struct plane_list *plane_head,st
 	//show_plane_info_list(plane_head);
 	for(p=plane_head->next;p!=plane_head;p=p->next)
 	{
-		printf("航班号:%s	始发地:%s	目的地:%s	日期:%s	   机型:%s		出发时间:%s		票价:%d		余票:%d\n",p->name_plane,p->start
+        char buf[500]={0};
+		sprintf(buf,"航班号:%s	始发地:%s	目的地:%s	日期:%s	   机型:%s		出发时间:%s		票价:%d		余票:%d\n",p->name_plane,p->start
 		,p->end,p->time_date,p->plane_type,p->time_hour,p->money,p->ticket_num);
-	}
-    printf("请选择要购买的航班号\n");
-    scanf("%s",buy_name);
+        send_bufto_client(buf);
+    }
+    send_bufto_client("请选择要购买的航班号\n");
+    //scanf("%s",buy_name);
+    ret_buf(buy_name,sizeof(buy_name));
     for(p=plane_head->next;p!=plane_head;p=p->next)
     {
         if(strcmp(p->name_plane,buy_name)==0)//有航班
@@ -54,17 +60,19 @@ void buy_ticket(struct person_list *person_head,struct plane_list *plane_head,st
                                 break;
                             }
                         }
-                        //printf("******%s*****\n",x->name);
+                        //send_bufto_client("******%s*****\n",x->name);
                         save_person_file(x);
                         save_plane_file(p);
                         //更新交易链     
 
                         new_deal_insert(deal_head,p,x,x,ticket_cost);
-                        printf("购买成功\n");
-                        printf("剩余积分：%d\n",person_head_log->next->money_num);
-                        printf("剩余vip余额：%d\n",person_head_log->next->vip_money);
-                        printf("我的钱包%d\n",person_head_log->next->money);
-
+                        send_bufto_client("购买成功\n");
+                        sprintf(send_msg_buf,"剩余积分：%d\n",person_head_log->next->money_num);
+                        send_bufto_client(send_msg_buf);
+                        sprintf(send_msg_buf,"剩余vip余额：%d\n",person_head_log->next->vip_money);
+                        send_bufto_client(send_msg_buf);
+                        sprintf(send_msg_buf,"我的钱包%d\n",person_head_log->next->money);
+                        send_bufto_client(send_msg_buf);
 
                         break;
                     }
@@ -97,16 +105,19 @@ void buy_ticket(struct person_list *person_head,struct plane_list *plane_head,st
                                 break;
                             }
                         }
-                        //printf("*****%s********\n",x->name);
+                        //send_bufto_client("*****%s********\n",x->name);
                         save_person_file(x);
                         save_plane_file(p);
                         //更新交易链                       
                         new_deal_insert(deal_head,p,x,x,ticket_cost);
                         
-                        printf("购买成功\n");
-                        printf("剩余积分：%d\n",person_head_log->next->money_num);
-                        printf("剩余vip余额：%d\n",person_head_log->next->vip_money);
-                        printf("我的钱包%d\n",person_head_log->next->money);
+                        send_bufto_client("购买成功\n");
+                        sprintf(send_msg_buf,"剩余积分：%d\n",person_head_log->next->money_num);
+                        send_bufto_client(send_msg_buf);
+                        sprintf(send_msg_buf,"剩余vip余额：%d\n",person_head_log->next->vip_money);
+                        send_bufto_client(send_msg_buf);
+                        sprintf(send_msg_buf,"我的钱包%d\n",person_head_log->next->money);
+                        send_bufto_client(send_msg_buf);
                         break;
                     }
                     else
@@ -140,21 +151,24 @@ void buy_ticket(struct person_list *person_head,struct plane_list *plane_head,st
                                 break;
                             }
                         }
-                        //printf("*****%s********\n",x->name);
+                        //send_bufto_client("*****%s********\n",x->name);
                         save_person_file(x);
                         save_plane_file(p);
                         //更新交易链                       
                         new_deal_insert(deal_head,p,x,x,ticket_cost);
-                        printf("购买成功\n");
-                        printf("剩余积分：%d\n",person_head_log->next->money_num);
-                        printf("剩余vip余额：%d\n",person_head_log->next->vip_money);
-                        printf("钱包余额：%d\n",person_head_log->next->money);
+                        send_bufto_client("购买成功\n");
+                        sprintf(send_msg_buf,"剩余积分：%d\n",person_head_log->next->money_num);
+                        send_bufto_client(send_msg_buf);
+                        sprintf(send_msg_buf,"剩余vip余额：%d\n",person_head_log->next->vip_money);
+                        send_bufto_client(send_msg_buf);
+                        sprintf(send_msg_buf,"钱包余额：%d\n",person_head_log->next->money);
+                        send_bufto_client(send_msg_buf);
                         break;
                     }
                 }
                 else
                 {
-                    printf("余额不足，请及时搬砖\n");
+                    send_bufto_client("余额不足，请及时搬砖\n");
                     break;
                 }
 
@@ -164,7 +178,7 @@ void buy_ticket(struct person_list *person_head,struct plane_list *plane_head,st
 
             }
             else
-            printf("该航班已售罄\n");
+            send_bufto_client("该航班已售罄\n");
             break;
             
 
@@ -175,7 +189,7 @@ void buy_ticket(struct person_list *person_head,struct plane_list *plane_head,st
     //while(getchar() != '\n');
     
     if(x==0)
-    printf("无该航班\n");
+    send_bufto_client("无该航班\n");
 }
 
 
@@ -187,28 +201,29 @@ void buy_others_ticket_verify(struct person_list *person_head,struct plane_list 
     int z=0;
     char others_id[10];
     struct person_list *q=NULL;
-    printf("请输入要乘坐人员的ID\n");
-    scanf("%s",others_id);
+    send_bufto_client("请输入要乘坐人员的ID\n");
+    //scanf("%s",others_id);
+    ret_buf(others_id,sizeof(others_id));
     for(q=person_head->next;q!=person_head;q=q->next)
     {
-        //printf("**++++*\n");
+        //send_bufto_client("**++++*\n");
         if(strcmp( q->id,others_id)==0)
         {
             z=1;
-           /*  printf("%s\n",q->name);
-            printf("%s\n",q->id);
-            printf("%d\n",q->ticket);
-            printf("%d\n",q->verify); */
+           /*  send_bufto_client("%s\n",q->name);
+            send_bufto_client("%s\n",q->id);
+            send_bufto_client("%d\n",q->ticket);
+            send_bufto_client("%d\n",q->verify); */
             if(q->verify==0)
                 {
-                    printf("未实名认证\n");
+                    send_bufto_client("未实名认证\n");
                     break;
                 }
             if(q->verify==1)
             {
                 if(q->ticket==1)
                     {
-                        printf("已经购买，不能重复购买\n");
+                        send_bufto_client("已经购买，不能重复购买\n");
                         break;
                     }
                 else
@@ -221,7 +236,7 @@ void buy_others_ticket_verify(struct person_list *person_head,struct plane_list 
         }      
     }
     if(z==0)
-    printf("未注册\n");
+    send_bufto_client("未注册\n");
 
 }
 
@@ -235,11 +250,13 @@ void buy_others_ticket(struct person_list *person_head,struct plane_list *plane_
 	    //show_plane_info_list(plane_head);
 	    for(p=plane_head->next;p!=plane_head;p=p->next)
 	    {
-	    	printf("航班号:%s	始发地:%s	目的地:%s	日期:%s	   机型:%s		出发时间:%s		票价:%d		余票:%d\n",p->name_plane,p->start
+	    	sprintf(send_msg_buf,"航班号:%s	始发地:%s	目的地:%s	日期:%s	   机型:%s		出发时间:%s		票价:%d		余票:%d\n",p->name_plane,p->start
 	    	,p->end,p->time_date,p->plane_type,p->time_hour,p->money,p->ticket_num);
-	    }
-        printf("请选择要购买的航班号\n");
-        scanf("%s",buy_name);
+            send_bufto_client(send_msg_buf);
+        }
+        send_bufto_client("请选择要购买的航班号\n");
+        //scanf("%s",buy_name);
+        ret_buf(buy_name,sizeof(buy_name));
         for(p=plane_head->next;p!=plane_head;p=p->next)
         {
             if(strcmp(p->name_plane,buy_name)==0)//有航班
@@ -278,9 +295,11 @@ void buy_others_ticket(struct person_list *person_head,struct plane_list *plane_
                             //更新交易链                       
                             new_deal_insert(deal_head,p,x,q,ticket_cost);
                             //save_file();
-                           printf("购买成功\n");
-                            printf("剩余积分：%d\n",person_head_log->next->money_num);
-                            printf("剩余vip余额：%d\n",person_head_log->next->vip_money);
+                            send_bufto_client("购买成功\n");
+                            sprintf(send_msg_buf,"剩余积分：%d\n",person_head_log->next->money_num);
+                            send_bufto_client(send_msg_buf);
+                            sprintf(send_msg_buf,"剩余vip余额：%d\n",person_head_log->next->vip_money);
+                            send_bufto_client(send_msg_buf);
                             break;
                         }
                         else if(person_head_log->next->money_num + person_head_log->next->vip_money>plane_ticket_cost)
@@ -313,9 +332,11 @@ void buy_others_ticket(struct person_list *person_head,struct plane_list *plane_
                             save_plane_file(p);
                             //更新交易链                       
                             new_deal_insert(deal_head,p,x,q,ticket_cost);
-                            printf("购买成功\n");
-                            printf("剩余积分：%d\n",person_head_log->next->money_num);
-                            printf("剩余vip余额：%d\n",person_head_log->next->vip_money);
+                           send_bufto_client("购买成功\n");
+                            sprintf(send_msg_buf,"剩余积分：%d\n",person_head_log->next->money_num);
+                            send_bufto_client(send_msg_buf);
+                            sprintf(send_msg_buf,"剩余vip余额：%d\n",person_head_log->next->vip_money);
+                            send_bufto_client(send_msg_buf);
                             break;
                         }
                         else
@@ -350,23 +371,29 @@ void buy_others_ticket(struct person_list *person_head,struct plane_list *plane_
                             save_plane_file(p);
                             //更新交易链                       
                             new_deal_insert(deal_head,p,x,q,ticket_cost);
-                            printf("购买成功\n");
-                            printf("剩余积分：%d\n",person_head_log->next->money_num);
-                            printf("剩余vip余额：%d\n",person_head_log->next->vip_money);
-                            //printf("剩余vip余额：%d\n",person_head_log->next->money);
+                            /* send_bufto_client("购买成功\n");
+                            send_bufto_client("剩余积分：%d\n",person_head_log->next->money_num);
+                            send_bufto_client("剩余vip余额：%d\n",person_head_log->next->vip_money); */
+
+                            send_bufto_client("购买成功\n");
+                            sprintf(send_msg_buf,"剩余积分：%d\n",person_head_log->next->money_num);
+                            send_bufto_client(send_msg_buf);
+                            sprintf(send_msg_buf,"剩余vip余额：%d\n",person_head_log->next->vip_money);
+                            send_bufto_client(send_msg_buf);
+                            //send_bufto_client("剩余vip余额：%d\n",person_head_log->next->money);
                             break;
                         }
                     }
                     else
                     {
-                        printf("余额不足，请及时搬砖\n");
-                        printf("余额不足，请及时搬砖\n");
-                        printf("余额不足，请及时搬砖\n");
+                        send_bufto_client("余额不足，请及时搬砖\n");
+                        send_bufto_client("余额不足，请及时搬砖\n");
+                        send_bufto_client("余额不足，请及时搬砖\n");
                         break;
                     }
                 }
                 else
-                printf("该航班已售罄\n");
+                send_bufto_client("该航班已售罄\n");
                 break;
 
             }       
@@ -374,7 +401,7 @@ void buy_others_ticket(struct person_list *person_head,struct plane_list *plane_
         }
         //while(getchar() != '\n');   
         if(x==0)
-        printf("无该航班\n");
+        send_bufto_client("无该航班\n");
     
 } 
 
@@ -389,15 +416,16 @@ void show_ticket_pay(struct person_list * person_head,struct person_list * perso
                 if(strcmp(person_head_log->next->ticket_name,p->name_plane)==0)
                 {
                     
-                    printf("航班号:%s	始发地:%s	目的地:%s	日期:%s	   机型:%s		出发时间:%s		票价:%d		余票:%d\n",p->name_plane,p->start
+                    sprintf(send_msg_buf,"航班号:%s	始发地:%s	目的地:%s	日期:%s	   机型:%s		出发时间:%s		票价:%d		余票:%d\n",p->name_plane,p->start
 	    						,p->end,p->time_date,p->plane_type,p->time_hour,p->money,p->ticket_num);
+                    send_bufto_client(send_msg_buf);
                 }
             }
    
     }
     else
     {
-        printf("尚未买票\n");
+        send_bufto_client("尚未买票\n");
     }
 }
 
@@ -406,8 +434,9 @@ void invest_money(struct person_list *person_head,struct person_list *person_hea
 {
     int p;
     struct person_list *x=NULL;
-    printf("请输入充值额度\n");
-    scanf("%d",&p);
+    send_bufto_client("请输入充值额度\n");
+    //scanf("%d",&p);
+    p=ret_choice(service_buf);
     if(p<=person_head_log->next->money)
     {
         if(p<1000)
@@ -423,9 +452,11 @@ void invest_money(struct person_list *person_head,struct person_list *person_hea
                     x->vip_money=person_head_log->next->vip_money;
                     x->money_num=person_head_log->next->money_num;
                     save_person_file(x);
-                    printf("充值成功！\n");
-                    printf("您的vip等级：%s\n",person_head_log->next->vip_level);
-                    printf("你的余额：%d\n",x->money);
+                    send_bufto_client("充值成功！\n");
+                    sprintf(send_msg_buf,"您的vip等级：%s\n",person_head_log->next->vip_level);
+                    send_bufto_client(send_msg_buf);
+                    sprintf(send_msg_buf,"你的余额：%d\n",x->money);
+                    send_bufto_client(send_msg_buf);
                     break;
                 }
             }
@@ -454,9 +485,14 @@ void invest_money(struct person_list *person_head,struct person_list *person_hea
                         strcpy(x->vip_level,"silver") ;
 
                         save_person_file(x);
-                        printf("充值成功！\n");
-                        printf("成为白金会员，购票获9折优惠\n");
-                        printf("你的余额：%d\n",x->money);
+                        send_bufto_client("充值成功！\n");
+                        send_bufto_client("成为白金会员，购票获9折优惠\n");
+
+                        //char money_buf[10]={0};
+                        //itoa(x->money,money_buf,10);
+                        sprintf(send_msg_buf,"你的余额：%d\n",x->money);
+
+                        send_bufto_client(send_msg_buf);
                     }
                     else
                     {
@@ -468,9 +504,11 @@ void invest_money(struct person_list *person_head,struct person_list *person_hea
                         x->money=person_head_log->next->money;
                         x->vip_money=person_head_log->next->vip_money;
                         x->money_num=person_head_log->next->money_num;
-                        printf("充值成功！\n");
-                        printf("您的vip等级：%s\n",person_head_log->next->vip_level);
-                        printf("你的余额：%d\n",x->money);
+                        send_bufto_client("充值成功！\n");
+                        sprintf(send_msg_buf,"您的vip等级：%s\n",person_head_log->next->vip_level);
+                        send_bufto_client(send_msg_buf);
+                        sprintf(send_msg_buf,"你的余额：%d\n",x->money);
+                        send_bufto_client(send_msg_buf);
                         save_person_file(x);
                     }
                     break;
@@ -502,9 +540,10 @@ void invest_money(struct person_list *person_head,struct person_list *person_hea
                         strcpy(x->vip_level,"gold") ;
 
                         save_person_file(x);
-                        printf("充值成功！\n");
-                        printf("成为黄金会员，购票获8折优惠\n");
-                        printf("你的余额：%d\n",x->money);
+                        send_bufto_client("充值成功！\n");
+                        send_bufto_client("成为黄金会员，购票获8折优惠\n");
+                        sprintf(send_msg_buf,"你的余额：%d\n",x->money);
+                        send_bufto_client(send_msg_buf);
                     }
                     else
                     {
@@ -516,9 +555,11 @@ void invest_money(struct person_list *person_head,struct person_list *person_hea
                         x->money=person_head_log->next->money;
                         x->vip_money=person_head_log->next->vip_money;
                         x->money_num=person_head_log->next->money_num;
-                        printf("充值成功！\n");
-                        printf("您的vip等级：%s\n",person_head_log->next->vip_level);
-                        printf("你的余额：%d\n",x->money);
+                        send_bufto_client("充值成功！\n");
+                        sprintf(send_msg_buf,"您的vip等级：%s\n",person_head_log->next->vip_level);
+                        send_bufto_client(send_msg_buf);
+                        sprintf(send_msg_buf,"你的余额：%d\n",x->money);
+                        send_bufto_client(send_msg_buf);
                         save_person_file(x);
                     }
                     break;
@@ -550,9 +591,10 @@ void invest_money(struct person_list *person_head,struct person_list *person_hea
                         strcpy(x->vip_level,"diamond") ;
 
                         save_person_file(x);
-                        printf("充值成功！\n");
-                        printf("成为钻石会员，购票获7折优惠\n");
-                        printf("你的余额：%d\n",x->money);
+                        send_bufto_client("充值成功！\n");
+                        send_bufto_client("成为钻石会员，购票获7折优惠\n");
+                        sprintf(send_msg_buf,"你的余额：%d\n",x->money);
+                        send_bufto_client(send_msg_buf);
                     }
                     else
                     {
@@ -564,9 +606,11 @@ void invest_money(struct person_list *person_head,struct person_list *person_hea
                         x->money=person_head_log->next->money;
                         x->vip_money=person_head_log->next->vip_money;
                         x->money_num=person_head_log->next->money_num;
-                        printf("充值成功！\n");
-                        printf("您的vip等级：%s\n",person_head_log->next->vip_level);
-                        printf("你的余额：%d\n",x->money);
+                        send_bufto_client("充值成功！\n");
+                        sprintf(send_msg_buf,"您的vip等级：%s\n",person_head_log->next->vip_level);
+                        send_bufto_client(send_msg_buf);
+                        sprintf(send_msg_buf,"你的余额：%d\n",x->money);                       
+                        send_bufto_client(send_msg_buf);
                         save_person_file(x);
                     }
                     break;
@@ -577,19 +621,20 @@ void invest_money(struct person_list *person_head,struct person_list *person_hea
 
     }
     else
-    printf("没钱啦，需要板砖\n");
+    send_bufto_client("没钱啦，需要板砖\n");
 }
 
 //退票
 int return_ticket(struct person_list * person_head,struct person_list * person_head_log,struct plane_list * plane_head,struct deal_list *deal_head)
 {
     int choice;
-    printf("请确认退票\n");
-    printf("=========================================\n");
-    printf("            1.确定                       \n");
-    printf("            2.取消                        \n");
-    printf("=========================================\n");
-    scanf("%d",&choice);
+    send_bufto_client("请确认退票\n");
+    send_bufto_client("=========================================\n");
+    send_bufto_client("            1.确定                       \n");
+    send_bufto_client("            2.取消                        \n");
+    send_bufto_client("=========================================\n");
+    //scanf("%d",&choice);
+    choice=ret_choice(service_buf);	
     if(choice==2)
     {
         return 2;
@@ -620,7 +665,7 @@ int return_ticket(struct person_list * person_head,struct person_list * person_h
                 q->ticket_bill=0;
                 strcpy(q->ticket_name,"0");
                 q->vip_money=p->money+q->vip_money;
-                //printf("*****%s********\n",q->name);
+                //send_bufto_client("*****%s********\n",q->name);
                 save_person_file(q);
                 break;
             }
@@ -650,11 +695,11 @@ int return_ticket(struct person_list * person_head,struct person_list * person_h
                 free(q_deal);
                 break;
             }
-        printf("退票成功\n");
+        send_bufto_client("退票成功\n");
         return 0;
     }
     else 
-    printf("输入有误\n");
+    send_bufto_client("输入有误\n");
     return 0;
 
 }

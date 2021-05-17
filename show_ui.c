@@ -25,53 +25,55 @@
     14.开发票
  */
 
+char send_msg_buf[500];
+
 void shou_ui_menu()
 {
-    printf("=========================================\n");
-    printf("            1.查看航班信息                \n");
-    printf("            2.查询航班                    \n");
-    printf("            3.快速查询                   \n");
-    printf("            4.实名认证                    \n");
-    printf("            5.购买机票                    \n");
-    printf("            6.帮人购买机票                \n");
-    printf("            7.查看自己的票                \n");
-    printf("            8.改签                        \n");
-    printf("            9.退票                        \n");
-    printf("            10.查询自己的信息             \n");
-    printf("            11.充值                       \n");
-    printf("            12.修改信息                   \n");
-    printf("            13.取票                      \n");
-    printf("            14.开发票                    \n");
-    printf("            15.注册                       \n");
-    printf("            16.登录                        \n");
-    printf("            17.展示风景                    \n");
-    printf("            18.退出登录                    \n");
-    printf("            19.退出登录并返回初始界面        \n");
-    printf("========================================\n");
+    send_bufto_client("=========================================\n");
+    send_bufto_client("            1.查看航班信息                \n");
+    send_bufto_client("            2.查询航班                    \n");
+    send_bufto_client("            3.快速查询                   \n");
+    send_bufto_client("            4.实名认证                    \n");
+    send_bufto_client("            5.购买机票                    \n");
+    send_bufto_client("            6.帮人购买机票                \n");
+    send_bufto_client("            7.查看自己的票                \n");
+    send_bufto_client("            8.改签                        \n");
+    send_bufto_client("            9.退票                        \n");
+    send_bufto_client("            10.查询自己的信息             \n");
+    send_bufto_client("            11.充值                       \n");
+    send_bufto_client("            12.修改信息                   \n");
+    send_bufto_client("            13.取票                      \n");
+    send_bufto_client("            14.开发票                    \n");
+    send_bufto_client("            15.注册                       \n");
+    send_bufto_client("            16.登录                        \n");
+    send_bufto_client("            17.展示风景                    \n");
+    send_bufto_client("            18.退出登录                    \n");
+    send_bufto_client("            19.退出登录并返回初始界面        \n");
+    send_bufto_client("========================================\n");
 }
 
 void show_ui_pick_plane()
 {
-    printf("=========================================\n");
-    printf("            1.目的地                     \n");
-    printf("            2.出发日期                    \n");
-    printf("            3.机型                       \n");
-    printf("            4.价格                       \n");
-    printf("            5.返回上一级菜单               \n");
-    printf("=========================================\n");
+    send_bufto_client("=========================================\n");
+    send_bufto_client("            1.目的地                     \n");
+    send_bufto_client("            2.出发日期                    \n");
+    send_bufto_client("            3.机型                       \n");
+    send_bufto_client("            4.价格                       \n");
+    send_bufto_client("            5.返回上一级菜单               \n");
+    send_bufto_client("=========================================\n");
 
 }
 
 void show_change_message_ui()
 {
     
-    printf("=========================================\n");
-    printf("            1.姓名                        \n");
-    printf("            2.职业                        \n");
-    printf("            3.ID                        \n");
-    printf("            4.密码                        \n");
-    printf("            5.返回上一级菜单               \n");
-    printf("=========================================\n");
+    send_bufto_client("=========================================\n");
+    send_bufto_client("            1.姓名                        \n");
+    send_bufto_client("            2.职业                        \n");
+    send_bufto_client("            3.ID                        \n");
+    send_bufto_client("            4.密码                        \n");
+    send_bufto_client("            5.返回上一级菜单               \n");
+    send_bufto_client("=========================================\n");
 }
 
 
@@ -101,13 +103,17 @@ void show_ticket_ui(struct person_list * person_head,struct person_list *person_
                 save_person_file(p);
 
 
-                printf("==========================================\n");
-                printf("姓名:%s\n",person_head_log->next->name);
-                printf("航班号:%s\n",q->name_plane);
-                printf("出发日期:%s\n",q->time_date);
-                printf("出发时间:%s\n",q->time_hour);
-                printf("==========================================\n");
-                printf("出票成功\n");
+                send_bufto_client("==========================================\n");
+               sprintf(send_msg_buf,"姓名:%s\n",person_head_log->next->name);
+               send_bufto_client(send_msg_buf);
+               sprintf(send_msg_buf,"航班号:%s\n",q->name_plane);
+               send_bufto_client(send_msg_buf);
+               sprintf(send_msg_buf,"出发日期:%s\n",q->time_date);
+               send_bufto_client(send_msg_buf);
+               sprintf(send_msg_buf,"出发时间:%s\n",q->time_hour);
+               send_bufto_client(send_msg_buf);
+                send_bufto_client("==========================================\n");
+                send_bufto_client("出票成功\n");
                 break;
             }
 
@@ -116,7 +122,7 @@ void show_ticket_ui(struct person_list * person_head,struct person_list *person_
     }
     else
     {
-        printf("以取票,无法重复取票\n");
+        send_bufto_client("以取票,无法重复取票\n");
     }
 
 }
@@ -147,14 +153,17 @@ void show_bill(struct person_list *person_head,struct person_list *person_head_l
                 save_person_file(p);
 
 
-                printf("==========================================\n");
-                printf("              XXX航空普通发票              \n");
-                printf("姓名:%s\n",person_head_log->next->name);
-                printf("金额:%d\n",q->money);
-                printf("日期:%s,时间:%s\n",q->time_date,q->time_hour);
+                send_bufto_client("==========================================\n");
+                send_bufto_client("              XXX航空普通发票              \n");
+                sprintf(send_msg_buf,"姓名:%s\n",person_head_log->next->name);
+                send_bufto_client(send_msg_buf);
+                sprintf(send_msg_buf,"金额:%d\n",q->money);
+                send_bufto_client(send_msg_buf);
+                sprintf(send_msg_buf,"日期:%s,时间:%s\n",q->time_date,q->time_hour);
+                send_bufto_client(send_msg_buf);
                 
-                printf("==========================================\n");
-                printf("出票成功\n");
+                send_bufto_client("==========================================\n");
+                send_bufto_client("出票成功\n");
                 break;
             }
 
@@ -163,42 +172,42 @@ void show_bill(struct person_list *person_head,struct person_list *person_head_l
     }
     else
     {
-        printf("已开发票,无法重复开票\n");
+        send_bufto_client("已开发票,无法重复开票\n");
     }
 
 }
 
 void show_open_ui()
 {
-    printf("=========================================\n");
-    printf("=========================================\n");
-    printf("                                         \n");
-    printf("           欢迎使用机票购买系统           \n");
-    printf("                                         \n");
-    printf("=========================================\n");
-    printf("=========================================\n");
+    send_bufto_client("=========================================\n");
+    send_bufto_client("=========================================\n");
+    send_bufto_client("                                         \n");
+    send_bufto_client("           欢迎使用机票购买系统           \n");
+    send_bufto_client("                                         \n");
+    send_bufto_client("=========================================\n");
+    send_bufto_client("=========================================\n");
     
 
 }
 void show_open_user_ui()
 {
-    printf("            请输入使用用户                 \n");
-    printf("             1.普通用户                    \n");
-    printf("             2.管理员                      \n");
+    send_bufto_client("            请输入使用用户                 \n");
+    send_bufto_client("             1.普通用户                    \n");
+    send_bufto_client("             2.管理员                      \n");
 
 }
 void show_root_ui()
 {
-    printf("=========================================\n");
-    printf("            1.查看所有航班信息            \n");
-    printf("            2.查看所有人员               \n");
-    printf("            3.录入航班                    \n");
-    printf("            4. 删除航班                   \n");
-    printf("            5.生效保险                    \n");
-    printf("            6.查看删除的航班              \n");
-    printf("            7.修改人员信息              \n");
-    printf("            8.退出登陆，返回上一级         \n");
-    printf("=========================================\n");
+    send_bufto_client("=========================================\n");
+    send_bufto_client("            1.查看所有航班信息            \n");
+    send_bufto_client("            2.查看所有人员               \n");
+    send_bufto_client("            3.录入航班                    \n");
+    send_bufto_client("            4. 删除航班                   \n");
+    send_bufto_client("            5.生效保险                    \n");
+    send_bufto_client("            6.查看删除的航班              \n");
+    send_bufto_client("            7.修改人员信息              \n");
+    send_bufto_client("            8.退出登陆，返回上一级         \n");
+    send_bufto_client("=========================================\n");
 
 }
 

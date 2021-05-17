@@ -2,14 +2,17 @@
 
 #include "all_include.h"
 
+char service_buf[1000];
+char service_ret_buf[1000];
 //实名认证
 void id_verify(struct person_list *person_head,struct real_info *real_head,struct person_list *person_head_log)
 {
     int x=0;
 	char verify_name[10];
 	char verify_name_id[10];
-	printf("请输入你的姓名\n");
-	scanf("%s",verify_name);	
+	send_bufto_client("请输入你的姓名\n");
+	//scanf("%s",verify_name);
+	ret_buf(verify_name,sizeof(verify_name));	
 	struct real_info *p=NULL;
 	for(p=real_head->next;p!=real_head;p=p->next)
 	{
@@ -17,14 +20,15 @@ void id_verify(struct person_list *person_head,struct real_info *real_head,struc
 		{
 			x=1;
 			
-			printf("请输入你的id\n");
-			scanf("%s",verify_name_id);
-			/* printf("%s\n",verify_name_id);
-			printf("%s\n",p->id);
-			printf("%s\n",p->status); */
+			send_bufto_client("请输入你的id\n");
+			//scanf("%s",verify_name_id);
+			ret_buf(verify_name_id,sizeof(verify_name_id));
+			/* send_bufto_client("%s\n",verify_name_id);
+			send_bufto_client("%s\n",p->id);
+			send_bufto_client("%s\n",p->status); */
 			if(strcmp(p->id,verify_name_id)==0)
 			{
-				printf("认证成功！\n");
+				send_bufto_client("认证成功！\n");
 				//改变用户状态
 				struct person_list *q=NULL;
 				for(q=person_head->next;q!=person_head;q=q->next)
@@ -54,7 +58,7 @@ void id_verify(struct person_list *person_head,struct real_info *real_head,struc
 			else 
 			{
 				
-				printf("认证失败,id错误\n");
+				send_bufto_client("认证失败,id错误\n");
 				break;
 			}
 		}
@@ -62,7 +66,7 @@ void id_verify(struct person_list *person_head,struct real_info *real_head,struc
 		
 	}
 	if(x==0)
-	printf("认证失败,姓名有误\n");
+	send_bufto_client("认证失败,姓名有误\n");
 	
 }
 
@@ -73,8 +77,9 @@ void change_message(struct person_list * person_head,struct person_list *person_
 	struct person_list * p=NULL;
 	struct deal_list *q=NULL;	
 		char new_passwd[10];
-		printf("请输入新的密码:\n");
-		scanf("%s",new_passwd);
+		send_bufto_client("请输入新的密码:\n");
+		//scanf("%s",new_passwd);
+		ret_buf(new_passwd,sizeof(new_passwd));
 		//登录链
 		delete_old_person_list(person_head_log->next);
 		strcpy(person_head_log->next->passwd,new_passwd);
@@ -94,16 +99,18 @@ void change_message_normal(struct person_list * person_head,struct person_list *
 	int choice;
 	struct person_list * p=NULL;
 	struct deal_list *q=NULL;
-	printf("请输入要修改的信息\n");
+	send_bufto_client("请输入要修改的信息\n");
 	show_change_message_ui();
-	scanf("%d",&choice);
+	//scanf("%d",&choice);
+	choice=ret_choice(service_buf);
 	switch (choice)
 	{
 	case 1://姓名
 	{
 		char new_name[10];
-		printf("请输入新的姓名:\n");
-		scanf("%s",new_name);
+		send_bufto_client("请输入新的姓名:\n");
+		//scanf("%s",new_name);
+		ret_buf(new_name,sizeof(new_name));
 		//登录链
 		delete_old_person_list(person_head_log->next);
 		strcpy(person_head_log->next->name,new_name);
@@ -122,8 +129,9 @@ void change_message_normal(struct person_list * person_head,struct person_list *
 	case 2://职业
 	{
 		char new_status[10];
-		printf("请输入新的职业:\n");
-		scanf("%s",new_status);
+		send_bufto_client("请输入新的职业:\n");
+		//scanf("%s",new_status);
+		ret_buf(new_status,sizeof(new_status));
 		//登录链
 		delete_old_person_list(person_head_log->next);
 		strcpy(person_head_log->next->status,new_status);
@@ -142,8 +150,9 @@ void change_message_normal(struct person_list * person_head,struct person_list *
 	case 3://ID
 	{
 		char new_id[10];
-		printf("请输入新的ID:\n");
-		scanf("%s",new_id);
+		send_bufto_client("请输入新的ID:\n");
+		//scanf("%s",new_id);
+		ret_buf(new_id,sizeof(new_id));
 		//登录链
 		delete_old_person_list(person_head_log->next);
 		strcpy(person_head_log->next->id,new_id);
@@ -162,8 +171,9 @@ void change_message_normal(struct person_list * person_head,struct person_list *
 	case 4://密码
 	{
 		char new_passwd[10];
-		printf("请输入新的密码:\n");
-		scanf("%s",new_passwd);
+		send_bufto_client("请输入新的密码:\n");
+		//scanf("%s",new_passwd);
+		ret_buf(new_passwd,sizeof(new_passwd));
 		//登录链
 		delete_old_person_list(person_head_log->next);
 		strcpy(person_head_log->next->passwd,new_passwd);
@@ -196,22 +206,25 @@ void change_message_root(struct person_list * person_head,struct person_list *pe
 	struct person_list * x=NULL;
 	struct deal_list *q=NULL;
 	
-	printf("请输入要修改人员的ID\n");
-	scanf("%s",change_id);
+	send_bufto_client("请输入要修改人员的ID\n");
+	//scanf("%s",change_id);
+	ret_buf(change_id,sizeof(change_id));
 	for(x=person_head->next;x!=person_head;x=x->next)
 	{
 		if(strcmp(x->id,change_id)==0)
 		{
 			y=1;
 			show_change_message_ui();
-			scanf("%d",&choice);
+			//scanf("%d",&choice);
+			choice=ret_choice(service_buf);	
 			switch (choice)
 			{
 			case 1://姓名
 			{
 				char new_name[10];
-				printf("请输入新的姓名:\n");
-				scanf("%s",new_name);
+				send_bufto_client("请输入新的姓名:\n");
+				//scanf("%s",new_name);
+				ret_buf(new_name,sizeof(new_name));
 				//登录链
 				if(person_head_log->next!=person_head_log)
 				strcpy(person_head_log->next->name,new_name);
@@ -229,8 +242,9 @@ void change_message_root(struct person_list * person_head,struct person_list *pe
 			case 2://职业
 			{
 				char new_status[10];
-				printf("请输入新的职业:\n");
-				scanf("%s",new_status);
+				send_bufto_client("请输入新的职业:\n");
+				//scanf("%s",new_status);
+				ret_buf(new_status,sizeof(new_status));
 				//登录链
 				if(person_head_log->next!=person_head_log)
 				strcpy(person_head_log->next->status,new_status);
@@ -249,8 +263,9 @@ void change_message_root(struct person_list * person_head,struct person_list *pe
 
 			{
 				char new_id[10];
-				printf("请输入新的ID:\n");
-				scanf("%s",new_id);
+				send_bufto_client("请输入新的ID:\n");
+				//scanf("%s",new_id);
+				ret_buf(new_id,sizeof(new_id));
 				//登录链
 				if(person_head_log->next!=person_head_log)
 				strcpy(person_head_log->next->id,new_id);
@@ -267,8 +282,9 @@ void change_message_root(struct person_list * person_head,struct person_list *pe
 			case 4://密码
 			{
 				char new_passwd[10];
-				printf("请输入新的密码:\n");
-				scanf("%s",new_passwd);
+				send_bufto_client("请输入新的密码:\n");
+				//scanf("%s",new_passwd);
+				ret_buf(new_passwd,sizeof(new_passwd));
 				//登录链
 				if(person_head_log->next!=person_head_log)
 				strcpy(person_head_log->next->passwd,new_passwd);
@@ -291,7 +307,7 @@ void change_message_root(struct person_list * person_head,struct person_list *pe
 	}
 	if(y==0)
 	{
-		printf("无法查找该人员\n");
+		send_bufto_client("无法查找该人员\n");
 	}
 	
 

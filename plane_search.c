@@ -1,4 +1,7 @@
 #include "all_include.h"
+char service_buf[1000];
+char service_ret_buf[1000];
+
 void plane_search(struct plane_list *plane_head)
 {
     char info[10];
@@ -11,14 +14,16 @@ void plane_search(struct plane_list *plane_head)
 		
 		printf("请选择要查询的条件目的地、出发日期、机型、价格\n");
 		show_ui_pick_plane();
-		scanf("%d",&choice);
+		//scanf("%d",&choice);
+		choice=ret_choice(service_buf);	
 		switch (choice)
 		{
 			case 1://目的地
 				{
 					int x=0;
 					printf("请输入您要去往的目的地\n");
-					scanf("%s",info);
+					//scanf("%s",info);
+					ret_buf(info,sizeof(info));
 					for(p=plane_head->next;p!=plane_head;p=p->next)
 					{
 						if(strcmp(info,p->end)==0)
@@ -39,7 +44,8 @@ void plane_search(struct plane_list *plane_head)
 				{
 					int x=0;
 					printf("请输入您的出发日期\n");
-					scanf("%s",info);
+					//scanf("%s",info);
+					ret_buf(info,sizeof(info));
 					for(p=plane_head->next;p!=plane_head;p=p->next)
 					{
 						if(strcmp(info,p->time_date)==0)
@@ -60,7 +66,8 @@ void plane_search(struct plane_list *plane_head)
 				{
 					int x=0;
 					printf("请输入您想要的机型\n");
-					scanf("%s",info);
+					//scanf("%s",info);
+					ret_buf(info,sizeof(info));
 					for(p=plane_head->next;p!=plane_head;p=p->next)
 					{
 						if(strcmp(info,p->plane_type)==0)
@@ -82,7 +89,8 @@ void plane_search(struct plane_list *plane_head)
 				{
 					int x=0;
 					printf("请输入您要的价格\n");
-					scanf("%d",&info_money);
+					//scanf("%d",&info_money);
+					info_money=ret_choice(service_buf);	
 					for(p=plane_head->next;p!=plane_head;p=p->next)
 					{
 						if(info_money==p->money)

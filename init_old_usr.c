@@ -1,6 +1,9 @@
 
 #include "all_include.h"
 
+char service_buf[1000];
+char service_ret_buf[1000];
+char send_msg_buf[500];
 /* ==================================注册链=========================================== */
  void insert_person_data_to_list(struct person_list *person_head,char *buf)
 {
@@ -58,7 +61,7 @@
 	tmp = strtok(NULL,seqs);
 	new->ticket_bill=atoi(tmp);
 
-    //printf("***99**\n");
+    //send_bufto_client("***99**\n");
     //new->status_off=1;
     //strcpy(new->vip_level,"normal");
     //new->vip_off=1;
@@ -77,7 +80,7 @@
 	p->next = new;
 	new->prev = p;
 	person_head->prev = new;
-    //printf("**88***\n");
+    //send_bufto_client("**88***\n");
 	return;
 } 
 
@@ -86,7 +89,7 @@ void read_person_file(struct person_list *person_head,char *filename)
 	//1. 打开文件
 	FILE *fp = fopen(filename,"r");
 	if(fp == NULL)
-		printf("fopen error!\n");
+		send_bufto_client("fopen error!\n");
 
 	//2. 读取文件。
 	char buf[200] = {0};
@@ -104,10 +107,10 @@ void read_person_file(struct person_list *person_head,char *filename)
 void init_person_list(struct person_list *person_head)
 {
 	//1. 打开目录。
-    //printf("***11**\n");
+    //send_bufto_client("***11**\n");
 	DIR *dp = opendir("./person_data");
 	if(dp == NULL)
-		printf("opendir error!");
+		send_bufto_client("opendir error!");
 
 	//2. 切换目录。
 	chdir("./person_data");
@@ -146,12 +149,17 @@ void person_head_logup(struct person_list *person_head)
 	char passwd[10];
 	struct person_list * old=NULL;
 	
-	printf("请依次输入你的ID，姓名，职业，密码\n");
-	scanf("%s%s%s%s",id,name,status,passwd);
+	send_bufto_client("请依次输入你的ID，姓名，职业，密码\n");
+	//scanf("%s%s%s%s",id,name,status,passwd);
+	ret_buf(id,sizeof(id));
+	//send_bufto_client("***%s**\n",id);
+	ret_buf(name,sizeof(name));
+	ret_buf(status,sizeof(status));
+	ret_buf(passwd,sizeof(passwd));
 	for(old=person_head->next;old!=person_head;old=old->next)
 	{
 		if(strcmp(old->name,name)==0)
-		{printf("该用户名已存在，请重新注册\n");
+		{send_bufto_client("该用户名已存在，请重新注册\n");
 		return;}
 	}
 
@@ -168,14 +176,14 @@ void person_head_logup(struct person_list *person_head)
 	memset(new->ticket_name,0,sizeof(new->ticket_name));
 	memset(new->ticket_date,0,sizeof(new->ticket_date));
 	strcpy(new->ticket_name,"ticket_name");
-	//printf("***%s\n",new->ticket_date);
+	//send_bufto_client("***%s\n",new->ticket_date);
 	strcpy(new->ticket_date,"ticket_date");
 	new->money=10000;
 	new->money_num=0;
 	new->vip_money=0;
 
-	//printf("%s\n",new->ticket_name);
-	//printf("%s\n",new->ticket_date);
+	//send_bufto_client("%s\n",new->ticket_name);
+	//send_bufto_client("%s\n",new->ticket_date);
 	memset(new->passwd,0,sizeof(new->passwd));
 	strcpy(new->passwd,passwd);
 	new->ticket_take=0;
@@ -207,15 +215,17 @@ int person_head_login(struct person_list * person_head,struct person_list *perso
 	//1. 为新节点申请空间。
 	
 	struct person_list *p =NULL;
-	printf("请输入你的姓名\n");
-	scanf("%s",name);
+	send_bufto_client("请输入你的姓名\n");
+	//scanf("%s",name);
+	ret_buf(name,sizeof(name));
 	for(p=person_head->next;p!=person_head;p=p->next)
 	{
 		if(strcmp(p->name,name)==0)
 		{
 			x=1;
-			printf("请输入密码\n");
-			scanf("%s",passwd);
+			send_bufto_client("请输入密码\n");
+			//scanf("%s",passwd);
+			ret_buf(passwd,sizeof(passwd));
 			if(strcmp(p->passwd,passwd)==0)
 			{
 				struct person_list *new = malloc(sizeof(struct person_list));
@@ -243,18 +253,18 @@ int person_head_login(struct person_list * person_head,struct person_list *perso
 				person_head_log->prev=new;
 				new->next=person_head_log;
 				new->prev=person_head_log;
-				printf("登陆成功\n");
+				send_bufto_client("登陆成功\n");
 				return 1;
 
 			}
 			else
-			printf("密码错误\n");
+			send_bufto_client("密码错误\n");
 			return 2;
 
 		}
 	}
 	if(x==1)
-	printf("不存在该用户\n");
+	send_bufto_client("不存在该用户\n");
 	return 2;	
 
 }
@@ -303,7 +313,7 @@ void read_real_file(struct real_info *real_head,char *filename)
 	//1. 打开文件
 	FILE *fp = fopen(filename,"r");
 	if(fp == NULL)
-		printf("fopen error!\n");
+		send_bufto_client("fopen error!\n");
 
 	//2. 读取文件。
 	char buf[200] = {0};
@@ -320,11 +330,11 @@ void read_real_file(struct real_info *real_head,char *filename)
 
 void init_real_list(struct real_info *real_head)
 {
-    //printf("**22***\n");
+    //send_bufto_client("**22***\n");
 	//1. 打开目录。
 	DIR *dp = opendir("./real_info");
 	if(dp == NULL)
-		printf("opendir error!");
+		send_bufto_client("opendir error!");
 
 	//2. 切换目录。
 	chdir("./real_info");
@@ -363,7 +373,7 @@ void init_real_list(struct real_info *real_head)
 
 void insert_plane_data_to_list(struct plane_list *plane_head,char *buf)
 {
-    //printf("***\n");
+    //send_bufto_client("***\n");
 	//1. 为新节点申请空间。
 	struct plane_list *new = malloc(sizeof(struct plane_list));
 
@@ -404,17 +414,17 @@ void insert_plane_data_to_list(struct plane_list *plane_head,char *buf)
 	p->next = new;
 	new->prev = p;
 	plane_head->prev = new;
-    //printf("**33*\n");
+    //send_bufto_client("**33*\n");
 	return;
 } 
 
 void read_plane_file(struct plane_list *plane_head,char *filename)
 {	
 	//1. 打开文件
-    //printf("***55**\n");
+    //send_bufto_client("***55**\n");
 	FILE *fp = fopen(filename,"r");
 	if(fp == NULL)
-		printf("fopen error!\n");
+		send_bufto_client("fopen error!\n");
 
 	//2. 读取文件。
 	char buf[200] = {0};
@@ -425,21 +435,21 @@ void read_plane_file(struct plane_list *plane_head,char *filename)
 
 	//4. 将buf分隔后，插入到链表中。
 	insert_plane_data_to_list(plane_head,buf);
-    //printf("***44**\n");
+    //send_bufto_client("***44**\n");
 	return;
 }
 
 void init_plane_list(struct plane_list *plane_head)
 {
-    //printf("***54225**\n");
+    //send_bufto_client("***54225**\n");
 	//1. 打开目录。
 	DIR *dp = opendir("./plane_data");
 	if(dp == NULL)
 	    perror("opendir");
-    //printf("***54225**\n");
+    //send_bufto_client("***54225**\n");
 	//2. 切换目录。
 	chdir("./plane_data");
-    //printf("***5455**\n");
+    //send_bufto_client("***5455**\n");
 	//3. 读取该目录的下的内容。
 	struct dirent *ep = NULL;
 
@@ -452,7 +462,7 @@ void init_plane_list(struct plane_list *plane_head)
 			continue;
 		read_plane_file(plane_head,ep->d_name);
 	}
-    //printf("***575**\n");
+    //send_bufto_client("***575**\n");
 	chdir("..");
 
 	//4. 关闭目录。
@@ -464,15 +474,15 @@ void init_plane_list(struct plane_list *plane_head)
 //删除连
 void init_plane_delete_list(struct plane_list *plane_delete_head)
 {
-    //printf("***54225**\n");
+    //send_bufto_client("***54225**\n");
 	//1. 打开目录。
 	DIR *dp = opendir("./plane_delete");
 	if(dp == NULL)
 	    perror("opendir");
-    //printf("***54225**\n");
+    //send_bufto_client("***54225**\n");
 	//2. 切换目录。
 	chdir("./plane_delete");
-    //printf("***5455**\n");
+    //send_bufto_client("***5455**\n");
 	//3. 读取该目录的下的内容。
 	struct dirent *ep = NULL;
 
@@ -485,7 +495,7 @@ void init_plane_delete_list(struct plane_list *plane_delete_head)
 			continue;
 		read_plane_file(plane_delete_head,ep->d_name);
 	}
-    //printf("***575**\n");
+    //send_bufto_client("***575**\n");
 	chdir("..");
 
 	//4. 关闭目录。
@@ -503,7 +513,7 @@ void init_plane_delete_list(struct plane_list *plane_delete_head)
 
 void insert_deal_data_to_list(struct deal_list *deal_head,char *buf)
 {
-	//printf("opendir error!");
+	//send_bufto_client("opendir error!");
 	//1. 为新节点申请空间。
 	struct deal_list *new = malloc(sizeof(struct deal_list));
 
@@ -541,7 +551,7 @@ void read_deal_file(struct deal_list *deal_head,char *filename)
 	//1. 打开文件
 	FILE *fp = fopen(filename,"r");
 	if(fp == NULL)
-		printf("fopen error!\n");
+		send_bufto_client("fopen error!\n");
 
 	//2. 读取文件。
 	char buf[200] = {0};
@@ -558,12 +568,12 @@ void read_deal_file(struct deal_list *deal_head,char *filename)
 
 void init_deal_list(struct deal_list *deal_head)
 {
-    //printf("***545**\n");
+    //send_bufto_client("***545**\n");
 	
 	//1. 打开目录。
 	DIR *dp = opendir("./deal_data");
 	if(dp == NULL)
-		printf("opendir error!");
+		send_bufto_client("opendir error!");
 
 	//2. 切换目录。
 	chdir("./deal_data");
@@ -632,7 +642,9 @@ void delete_deal_list(struct deal_list *deal_head,struct deal_list *new)
 void delete_old_person_list(struct person_list *new)
 {
 	//路径。
-	printf("****%s\n",new->id);
+	sprintf(send_msg_buf,"****%s\n",new->id);
+	send_bufto_client(send_msg_buf);
+
 	char filename[100] = {0};
 	sprintf(filename,"rm ./person_data/%s.txt",new->id);	
 	system(filename);

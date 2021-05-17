@@ -1,17 +1,22 @@
 #include "all_include.h"
-
+char service_buf[1000];
+char service_ret_buf[1000];
+char send_msg_buf[500];
+//char send_to_client[1000];
 void user_fun(struct person_list *person_head,struct person_list *person_head_log,struct real_info *real_head,struct plane_list *plane_head,struct deal_list * deal_head)
 {		
     while(1)
     {
         int choice;
 	    shou_ui_menu();
-	    printf("请输入指令\n");
-	    scanf("%d",&choice);
-		while(getchar()!='\n');
+	    //send_bufto_client("请输入指令\n");
+		send_bufto_client("请输入指令\n");
+	    //scanf("%d",&choice);
+		choice=ret_choice(service_buf);
+		//while(getchar()!='\n');
       /*   if(choice<1 &&choice >18)
         {
-            printf("输入有误\n");
+            send_bufto_client("输入有误\n");
             //while(getchar()!='\n');
         }
         else */
@@ -25,14 +30,17 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 						//show_plane_info_list(plane_head);
 						for(p=plane_head->next;p!=plane_head;p=p->next)
 						{
-							printf("航班号:%s	始发地:%s	目的地:%s	日期:%s	   机型:%s		出发时间:%s		票价:%d		余票:%d\n",p->name_plane,p->start
+							char buf[500]={0};
+							sprintf(buf,"航班号:%s	始发地:%s	目的地:%s	日期:%s	   机型:%s		出发时间:%s		票价:%d		余票:%d\n",p->name_plane,p->start
 							,p->end,p->time_date,p->plane_type,p->time_hour,p->money,p->ticket_num);
-
+							send_bufto_client(buf);
+							//usleep(10);
 						}
-						//printf("按任意建返回上一菜单");
+						//send_bufto_client("按任意建返回上一菜单");
 
-
-	    	}
+						//char send_msg_buf[500];
+						//send_bufto_client(send_msg_buf);
+	    	}	
 	    		break;
 	    case 2://2.查询航班 
 					{
@@ -45,20 +53,21 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 		    	struct plane_list *p=NULL;
 		    	char plane_info[10];
 		    	int x=0;
-		    	printf("请输入要查询的航班\n");
-		    	scanf("%s",plane_info);
+		    	send_bufto_client("请输入要查询的航班\n");
+		    	//scanf("%s",plane_info);
+				ret_buf(plane_info,sizeof(plane_info));
 		    	for(p=plane_head->next;p!=plane_head;p=p->next)
 		    	{
 		    		if(strcmp(p->name_plane,plane_info)==0)
 		    		{
-		    			printf("航班号:%s	始发地:%s	目的地:%s	日期:%s	   机型:%s		出发时间:%s		票价:%d		余票:%d\n",p->name_plane,p->start
+		    			sprintf(send_msg_buf,"航班号:%s	始发地:%s	目的地:%s	日期:%s	   机型:%s		出发时间:%s		票价:%d		余票:%d\n",p->name_plane,p->start
 		    			,p->end,p->time_date,p->plane_type,p->time_hour,p->money,p->ticket_num);
 		    			x++;
     
 		    		}
 		    	}
 		    		if(x==0)
-		    		printf("暂无改航班\n" );
+		    		send_bufto_client("暂无改航班\n" );
 		    }
 		    break;
 
@@ -68,7 +77,7 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 						struct person_list *p=NULL;
 						if(person_head_log->next==person_head_log)
 							{						
-								printf("尚未登录，请先登录\n");
+								send_bufto_client("尚未登录，请先登录\n");
 								x=person_head_login(person_head,person_head_log);
 								if(x==1)
 								{
@@ -79,12 +88,12 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 										}
 									else
 										{
-											printf("已认证，不需要重复操作\n");
+											send_bufto_client("已认证，不需要重复操作\n");
 											break;
 										}
 								}
 								else if(x==2)
-								printf("登录失败\n");
+								send_bufto_client("登录失败\n");
 							}
 						else
 							{
@@ -94,7 +103,7 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 									}
 								else
 									{
-										printf("已认证，不需要重复操作\n");
+										send_bufto_client("已认证，不需要重复操作\n");
 										break;
 									}					
 							}
@@ -108,7 +117,7 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 					struct person_list *p=NULL;
 					if(person_head_log->next==person_head_log)
 					{						
-						printf("尚未登录，请先登录\n");
+						send_bufto_client("尚未登录，请先登录\n");
 						x=person_head_login(person_head,person_head_log);
 						if(x==1)
 						{
@@ -118,16 +127,16 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 									if(person_head_log->next->ticket==0)
 									buy_ticket(person_head,plane_head,person_head_log,deal_head);
 									else
-									printf("已购票，不可重复购买\n");
+									send_bufto_client("已购票，不可重复购买\n");
 								}
 								else
 								{
-									printf("未实名认证\n");
+									send_bufto_client("未实名认证\n");
 									break;
 								}
 						}
 						else if(x==2)
-						printf("登录失败\n");
+						send_bufto_client("登录失败\n");
 					}
 					else
 					{
@@ -136,11 +145,11 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 								if(person_head_log->next->ticket==0)
 								buy_ticket(person_head,plane_head,person_head_log,deal_head);
 								else
-								printf("已购票，不可重复购买\n");
+								send_bufto_client("已购票，不可重复购买\n");
 							}
 						else
 							{
-								printf("未实名认证\n");
+								send_bufto_client("未实名认证\n");
 								break;
 							}
 					}
@@ -153,7 +162,7 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 						struct person_list *p=NULL;
 						if(person_head_log->next==person_head_log)
 							{						
-								printf("尚未登录，请先登录\n");
+								send_bufto_client("尚未登录，请先登录\n");
 								x=person_head_login(person_head,person_head_log);
 								if(x==1)
 								{
@@ -165,12 +174,12 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 										}
 										else
 										{
-											printf("未实名认证\n");
+											send_bufto_client("未实名认证\n");
 											break;
 										}
 								}
 								else if(x==2)
-								printf("登录失败\n");
+								send_bufto_client("登录失败\n");
 							}
 						else
 							{
@@ -180,7 +189,7 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 								}
 								else
 								{
-									printf("未实名认证\n");
+									send_bufto_client("未实名认证\n");
 									break;
 								}
 							}
@@ -190,19 +199,23 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 
 	    case 7://7.查看自己的票 
 	        {
-					printf("%d\n",person_head_log->next->ticket);
+					//char money_buf[10]={0};
+                    //itoa(person_head_log->next->ticket,money_buf,10);
+                    //sprintf("你的余额：%s\n",money_buf);
+					sprintf(send_msg_buf,"%d\n",person_head_log->next->ticket);
+					send_bufto_client(send_msg_buf);
 					int x=0;
 					struct person_list *p=NULL;
 					if(person_head_log->next==person_head_log)
 					{						
-						printf("尚未登录，请先登录\n");
+						send_bufto_client("尚未登录，请先登录\n");
 						x=person_head_login(person_head,person_head_log);
 						if(x==1)
 							{						
 								show_ticket_pay(person_head,person_head_log,plane_head);								
 							}
 						else if(x==2)
-						printf("登录失败\n");
+						send_bufto_client("登录失败\n");
 					}
 					else
 					{
@@ -220,7 +233,7 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 					struct person_list *p=NULL;
 					if(person_head_log->next==person_head_log)
 					{						
-						printf("尚未登录，请先登录\n");
+						send_bufto_client("尚未登录，请先登录\n");
 						x=person_head_login(person_head,person_head_log);
 						if(x==1)
 						{
@@ -236,11 +249,11 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 									
 									}
 								else//没票
-									printf("尚未购票\n");
+									send_bufto_client("尚未购票\n");
 								
 						}
 						else if(x==2)
-						printf("登录失败\n");
+						send_bufto_client("登录失败\n");
 					}
 
 	        }
@@ -252,7 +265,7 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 						struct person_list *p=NULL;
 						if(person_head_log->next==person_head_log)
 						{						
-							printf("尚未登录，请先登录\n");
+							send_bufto_client("尚未登录，请先登录\n");
 							x=person_head_login(person_head,person_head_log);
 							if(x==1)
 							{
@@ -260,18 +273,18 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 									if(person_head_log->next->ticket==1)//有票								
 										return_ticket(person_head,person_head_log,plane_head,deal_head);
 									else//没票
-										printf("尚未购票\n");
+										send_bufto_client("尚未购票\n");
 									
 							}
 							else if(x==2)
-							printf("登录失败\n");
+							send_bufto_client("登录失败\n");
 						}
 						else
 						{
 							if(person_head_log->next->ticket==1)
 								return_ticket(person_head,person_head_log,plane_head,deal_head);
 							else//没票
-									printf("尚未购票\n");
+									send_bufto_client("尚未购票\n");
 							
 						}
 						
@@ -286,54 +299,86 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 						struct person_list *p=NULL;
 						if(person_head_log->next==person_head_log)
 						{						
-							printf("尚未登录，请先登录\n");
+							send_bufto_client("尚未登录，请先登录\n");
 							x=person_head_login(person_head,person_head_log);
 							if(x==1)
 							{
 
 									
-										printf("您的vip等级：%s\n",person_head_log->next->id);
-										printf("你的姓名：%s\n",person_head_log->next->name);
-                                        printf("你的职业：%s\n",person_head_log->next->status);
-                                        printf("你的职业折扣：%f\n",person_head_log->next->status_off);
-                                        printf("你的VIP等级：%s\n",person_head_log->next->vip_level);
-                                        printf("你的vip折扣：%f\n",person_head_log->next->vip_off);
-                                        printf("你的使命认证：%d\n",person_head_log->next->verify);
-                                        printf("你的是否买票：%d\n",person_head_log->next->ticket);
-                                        printf("你的航班号：%s\n",person_head_log->next->ticket_name);
-                                        printf("你的出发日期：%s\n",person_head_log->next->ticket_date);
-                                        printf("你的余额：%d\n",person_head_log->next->money);
-                                        printf("你的积分：%d\n",person_head_log->next->money_num);
-                                        printf("你的vip余额：%d\n",person_head_log->next->vip_money);
-                                        printf("你的密码：%s\n",person_head_log->next->passwd);
-                                        printf("你的是否取票：%d\n",person_head_log->next->ticket_take);
-                                        printf("你的是否开发票：%d\n",person_head_log->next->ticket_bill);
+										sprintf(send_msg_buf,"您的vip等级：%s\n",person_head_log->next->id);
+										send_bufto_client(send_msg_buf);
+										sprintf(send_msg_buf,"你的姓名：%s\n",person_head_log->next->name);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的职业：%s\n",person_head_log->next->status);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的职业折扣：%f\n",person_head_log->next->status_off);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的VIP等级：%s\n",person_head_log->next->vip_level);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的vip折扣：%f\n",person_head_log->next->vip_off);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的使命认证：%d\n",person_head_log->next->verify);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的是否买票：%d\n",person_head_log->next->ticket);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的航班号：%s\n",person_head_log->next->ticket_name);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的出发日期：%s\n",person_head_log->next->ticket_date);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的余额：%d\n",person_head_log->next->money);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的积分：%d\n",person_head_log->next->money_num);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的vip余额：%d\n",person_head_log->next->vip_money);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的密码：%s\n",person_head_log->next->passwd);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的是否取票：%d\n",person_head_log->next->ticket_take);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的是否开发票：%d\n",person_head_log->next->ticket_bill);
+										send_bufto_client(send_msg_buf);
 									
 									
 							}
 							else if(x==2)
-							printf("登录失败\n");
+							send_bufto_client("登录失败\n");
 						}
 						else
 						{
 				
 							
-										printf("您的ID：%s\n",person_head_log->next->id);
-										printf("你的姓名：%s\n",person_head_log->next->name);
-                                        printf("你的职业：%s\n",person_head_log->next->status);
-                                        printf("你的职业折扣：%f\n",person_head_log->next->status_off);
-                                        printf("你的VIP等级：%s\n",person_head_log->next->vip_level);
-                                        printf("你的vip折扣：%f\n",person_head_log->next->vip_off);
-                                        printf("你的使命认证：%d\n",person_head_log->next->verify);
-                                        printf("你的是否买票：%d\n",person_head_log->next->ticket);
-                                        printf("你的航班号：%s\n",person_head_log->next->ticket_name);
-                                        printf("你的出发日期：%s\n",person_head_log->next->ticket_date);
-                                        printf("你的余额：%d\n",person_head_log->next->money);
-                                        printf("你的积分：%d\n",person_head_log->next->money_num);
-                                        printf("你的vip余额：%d\n",person_head_log->next->vip_money);
-                                        printf("你的密码：%s\n",person_head_log->next->passwd);
-                                        printf("你的是否取票：%d\n",person_head_log->next->ticket_take);
-                                        printf("你的是否开发票：%d\n",person_head_log->next->ticket_bill);
+										sprintf(send_msg_buf,"您的ID：%s\n",person_head_log->next->id);
+										send_bufto_client(send_msg_buf);
+										sprintf(send_msg_buf,"你的姓名：%s\n",person_head_log->next->name);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的职业：%s\n",person_head_log->next->status);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的职业折扣：%f\n",person_head_log->next->status_off);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的VIP等级：%s\n",person_head_log->next->vip_level);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的vip折扣：%f\n",person_head_log->next->vip_off);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的使命认证：%d\n",person_head_log->next->verify);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的是否买票：%d\n",person_head_log->next->ticket);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的航班号：%s\n",person_head_log->next->ticket_name);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的出发日期：%s\n",person_head_log->next->ticket_date);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的余额：%d\n",person_head_log->next->money);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的积分：%d\n",person_head_log->next->money_num);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的vip余额：%d\n",person_head_log->next->vip_money);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的密码：%s\n",person_head_log->next->passwd);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的是否取票：%d\n",person_head_log->next->ticket_take);
+										send_bufto_client(send_msg_buf);
+                                        sprintf(send_msg_buf,"你的是否开发票：%d\n",person_head_log->next->ticket_bill);
+										send_bufto_client(send_msg_buf);
 							
 							
 						}
@@ -347,7 +392,7 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 						struct person_list *p=NULL;
 						if(person_head_log->next==person_head_log)
 							{						
-								printf("尚未登录，请先登录\n");
+								send_bufto_client("尚未登录，请先登录\n");
 								x=person_head_login(person_head,person_head_log);
 								if(x==1)
 								{
@@ -358,12 +403,12 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 										}
 										else
 										{
-											printf("未实名认证\n");
+											send_bufto_client("未实名认证\n");
 											break;
 										}
 								}
 								else if(x==2)
-								printf("登录失败\n");
+								send_bufto_client("登录失败\n");
 							}
 						else
 							{
@@ -373,7 +418,7 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 								}
 								else
 								{
-									printf("未实名认证\n");
+									send_bufto_client("未实名认证\n");
 									break;
 								}
 							}
@@ -386,7 +431,7 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 					struct person_list *p=NULL;
 					if(person_head_log->next==person_head_log)
 					{						
-						printf("尚未登录，请先登录\n");
+						send_bufto_client("尚未登录，请先登录\n");
 						x=person_head_login(person_head,person_head_log);
 						if(x==1)
 						{
@@ -404,7 +449,7 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 								}
 						}
 						else if(x==2)
-						printf("登录失败\n");
+						send_bufto_client("登录失败\n");
 					}
 					else
 					{
@@ -428,7 +473,7 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 						struct person_list *p=NULL;
 						if(person_head_log->next==person_head_log)
 							{						
-								printf("尚未登录，请先登录\n");
+								send_bufto_client("尚未登录，请先登录\n");
 								x=person_head_login(person_head,person_head_log);
 								if(x==1)
 									{
@@ -436,18 +481,18 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 									if(person_head_log->next->ticket==1)//有票								
 										show_ticket_ui(person_head,person_head_log,plane_head);
 									else//没票
-										printf("尚未购票\n");
+										send_bufto_client("尚未购票\n");
 
 									}
 								else if(x==2)
-								printf("登录失败\n");
+								send_bufto_client("登录失败\n");
 							}
 						else
 							{
 								if(person_head_log->next->ticket==1)
 									show_ticket_ui(person_head,person_head_log,plane_head);
 								else//没票
-									printf("尚未购票\n");
+									send_bufto_client("尚未购票\n");
 						
 							}
 
@@ -460,7 +505,7 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 						struct person_list *p=NULL;
 						if(person_head_log->next==person_head_log)
 						{						
-							printf("尚未登录，请先登录\n");
+							send_bufto_client("尚未登录，请先登录\n");
 							x=person_head_login(person_head,person_head_log);
 							if(x==1)
 							{
@@ -468,18 +513,18 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 									if(person_head_log->next->ticket==1)//有票								
 										show_bill(person_head,person_head_log,plane_head);
 									else//没票
-										printf("尚未购票\n");
+										send_bufto_client("尚未购票\n");
 
 							}
 							else if(x==2)
-							printf("登录失败\n");
+							send_bufto_client("登录失败\n");
 						}
 						else
 						{
 							if(person_head_log->next->ticket==1)
 								show_bill(person_head,person_head_log,plane_head);
 							else//没票
-									printf("尚未购票\n");
+									send_bufto_client("尚未购票\n");
 
 						}
 
@@ -488,7 +533,7 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 	    case 15://注册
 	        {
 				if(person_head_log->next!=person_head_log)
-					printf("有用户登陆中，请先退出\n");
+					send_bufto_client("有用户登陆中，请先退出\n");
 				else							
 					person_head_logup(person_head);
 	        }
@@ -498,7 +543,7 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 			    if(person_head_log->next==person_head_log)
 					person_head_login(person_head,person_head_log);
 				else
-					printf("已有账户登录，请退出后重新操作\n");
+					send_bufto_client("已有账户登录，请退出后重新操作\n");
 	        }
 	    	break;
         case 17://展示风景
@@ -514,10 +559,10 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 								free(person_head_log->next);
 								person_head_log->next=person_head_log;
 								person_head_log->prev=person_head_log;							
-								printf("退出成功\n");	
+								send_bufto_client("退出成功\n");	
 							}
 						else
-							printf("无登录用户\n");	
+							send_bufto_client("无登录用户\n");	
 						show_black();	
 					}
 					break;
@@ -529,15 +574,15 @@ void user_fun(struct person_list *person_head,struct person_list *person_head_lo
 						free(person_head_log->next);
 						person_head_log->next=person_head_log;
 						person_head_log->prev=person_head_log;							
-						printf("退出成功\n");	
+						send_bufto_client("退出成功\n");	
 					}
 				else
-							printf("无登录用户\n");
+							send_bufto_client("无登录用户\n");
 				
                 return;
 	        }
         default :
-	       printf("输入有误\n");
+	       send_bufto_client("输入有误\n");
 	    }
         		
     }

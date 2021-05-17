@@ -5,7 +5,7 @@ void save_person_file(struct person_list *new)
 	//的路径。
 	char filename[200] = {0};
 	sprintf(filename,"./person_data/%s.txt",new->id);
-	//printf("********")
+	//send_bufto_client("********")
 
 	//的内容。
 	char filebuf[500] = {0};
@@ -21,7 +21,7 @@ void save_person_file(struct person_list *new)
 	//写入数据到文件中。
 	fwrite(filebuf,strlen(filebuf),1,fp);
 
-	//printf("+++\n");
+	//send_bufto_client("+++\n");
 	//关闭文件。
 	fclose(fp);
 
@@ -70,7 +70,7 @@ void save_plane_file(struct plane_list *plane_head)
 
 
 	fwrite(filebuf,strlen(filebuf),1,fp);
-	printf("***\n");
+	send_bufto_client("***\n");
 
 	fclose(fp);
 
