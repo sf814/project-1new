@@ -80,8 +80,11 @@ void change_message(struct person_list * person_head,struct person_list *person_
 		strcpy(person_head_log->next->passwd,new_passwd);
 		//注册链
 		for(p=person_head->next;p!=person_head;p=p->next)
-			if(strcmp(person_head_log->next->passwd,p->passwd)==0)
-				{strcpy(p->passwd,new_passwd);break;}
+			if(strcmp(person_head_log->next->id,p->id)==0)
+				{
+				strcpy(p->passwd,new_passwd)；
+					break;
+				}
 
 		
 		save_person_file(p);
